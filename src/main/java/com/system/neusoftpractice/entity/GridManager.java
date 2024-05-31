@@ -13,10 +13,17 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("gridManagers")
+@TableName("gridManager_info")
 public class GridManager implements Serializable {
+    //Account Attributes
     @TableId
     private String id;
-    private String name;
+    private String username;
     private String password;
+    private Boolean used;
+    private String zone;
+
+    //Personal Attributes
+    private String idCard;
+    private String name;
 }

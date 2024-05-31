@@ -13,11 +13,16 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("administrators")
+@TableName("administrator_info")
 public class Administrator implements Serializable {
+    //Account Attributes
     @TableId
     private String id;
-    private String name;
+    private String username;
     private String password;
+    private int status;
 
+    //Personal Attributes
+    private String idCard;
+    private String name;
 }

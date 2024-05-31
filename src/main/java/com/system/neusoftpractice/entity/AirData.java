@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("airData")
+@TableName("airData_info")
 public class AirData implements Serializable {
     @TableId
     private String id;
