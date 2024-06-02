@@ -3,11 +3,14 @@ package com.system.neusoftpractice.controller;
 import com.system.neusoftpractice.dto.RequestCharacterEntity;
 import com.system.neusoftpractice.dto.User;
 import com.system.neusoftpractice.entity.Administrator;
+import com.system.neusoftpractice.entity.Task;
 import com.system.neusoftpractice.service.AdministratorService;
 import com.system.neusoftpractice.common.*;
+import com.system.neusoftpractice.service.TaskService;
 import com.system.neusoftpractice.service.UserService;
 import com.system.neusoftpractice.util.*;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name="Administrator_API")
 @RestController
 @RequestMapping("/administrator")
 @Slf4j
@@ -25,6 +29,7 @@ import java.util.Map;
 public class AdministratorController {
     private final AdministratorService administratorService;
     private final UserService userService;
+    private final TaskService taskService;
 
     @PostMapping("/addAdministrator")
     public HttpResponseEntity addAdministrator(@RequestBody RequestCharacterEntity requestCharacterEntity) {
@@ -72,7 +77,19 @@ public class AdministratorController {
         List<Administrator> administratorList = page.getRecords();
         boolean success = !administratorList.isEmpty();
         return HttpResponseEntity.response(success, "查询", administratorList);
-    }    
+    }
+
+    @PostMapping("/appoint")
+    public HttpResponseEntity appoint(@RequestBody Task task) {
+        task.setId(SnowflakeUtil.genId());
+        task.setStatus(0);
+        task.setDescription("waiting...");
+        task.setRelatedAirData("None");
+        task.setImageUrl("None");
+
+        boolean success = taskService.save(task);
+        return HttpResponseEntity.response(success, "预约", null);
+    }
 
     @PostMapping("/logout")
     public HttpResponseEntity logout(@RequestBody Administrator administrator, HttpServletResponse response) {

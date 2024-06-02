@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.system.neusoftpractice.common.HttpResponseEntity;
 import com.system.neusoftpractice.entity.AirData;
 import com.system.neusoftpractice.service.AirDataService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name="AirData_API")
 @RestController
 @RequestMapping("/airData")
 @Slf4j

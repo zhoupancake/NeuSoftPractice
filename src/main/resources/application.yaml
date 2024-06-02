@@ -12,11 +12,27 @@ spring:
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 0
+      max-file-size: 50MB
+      max-request-size: 50MB
+      location: /tmp/upload
   data:
     redis:
       host: localhost
       port: 6379
       database: 0
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /user-services/v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /user-services/swagger-ui.html
+
 
 mybatis-plus:
   configuration:

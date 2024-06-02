@@ -15,20 +15,14 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("task_info")
-public class Task {
+@TableName("report_info")
+public class Report {
     @TableId
     private String id;
-    private String appointerId;
-    private String appointeeId;
+    private String location;
+    private Integer status;
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createdTime;
-    private LocalDateTime submittedTime;
-    private Integer status;
-
-    private String location;
-    private String request;
     private String description;
-    private String relatedAirData;
     private String imageUrl;
 }

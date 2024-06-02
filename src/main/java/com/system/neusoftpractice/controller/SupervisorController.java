@@ -8,19 +8,23 @@ import com.system.neusoftpractice.service.*;
 import com.system.neusoftpractice.util.*;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+//import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Tag(name="Supervisor_API")
 @RestController
 @RequestMapping("/supervisor")
 @Slf4j
@@ -28,6 +32,8 @@ import java.util.Map;
 public class SupervisorController {
     private final SupervisorService supervisorService;
     private final UserService userService;
+    private final ReportService reportService;
+
     @PostMapping("/addSupervisor")
     public HttpResponseEntity addSupervisor(@RequestBody RequestCharacterEntity requestCharacterEntity) {
         Supervisor supervisor = requestCharacterEntity.getSupervisor_create();
@@ -76,6 +82,37 @@ public class SupervisorController {
         List<Supervisor> supervisorList = page.getRecords();
         boolean success = !supervisorList.isEmpty();
         return HttpResponseEntity.response(success, "查询", supervisorList);
+    }
+
+    @PostMapping("report")
+    public HttpResponseEntity submit(@RequestBody Report report) {
+        report.setId(SnowflakeUtil.genId());
+        report.setStatus(0);
+        boolean success = reportService.save(report);
+
+        return HttpResponseEntity.response(success, "提交", null);
+    }
+
+    @RequestMapping("/uploadImage")
+    public Map<String, Object> imageUpload(@RequestParam("files") MultipartFile[] files) {
+        Map<String, Object> map = new HashMap<>();
+        List<String> list = new ArrayList<>();
+        for (MultipartFile mfile : files) {
+            //获取文件后缀
+            String suffixName = ImageUtil.getImagePath(mfile);
+            //生成新文件名称
+            String newFileName = ImageUtil.getNewFileName(suffixName);
+            //保存文件
+            File file = new File(ImageUtil.getNewImagePath(newFileName));
+            boolean state = ImageUtil.saveImage(mfile, file);
+            if (state) {
+//                 list.add(ImageUtil.getNewImagePath(newFileName));
+                //保存数据库的图片路径为  相对路径
+                list.add("uploadImage/" + newFileName);
+            }
+        }
+        map.put("imgList", list);
+        return map;
     }
 
     @PostMapping("/logout")

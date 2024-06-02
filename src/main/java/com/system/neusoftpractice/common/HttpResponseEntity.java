@@ -25,7 +25,7 @@ public class HttpResponseEntity {
 
     // 创建一个表示成功响应的HttpResponseEntity对象，带有数据
     public static HttpResponseEntity success(String message, Object data) {
-        return new HttpResponseEntity("666", data, message);
+        return new HttpResponseEntity("200", data, message);
     }
 
     // 创建一个表示成功响应的HttpResponseEntity对象，不带数据

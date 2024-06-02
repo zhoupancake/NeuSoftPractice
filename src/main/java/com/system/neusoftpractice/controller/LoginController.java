@@ -5,6 +5,7 @@ import com.system.neusoftpractice.dto.User;
 import com.system.neusoftpractice.entity.*;
 import com.system.neusoftpractice.service.*;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@Tag(name="Login_API")
 @RestController
 @RequestMapping("/user")
 @Slf4j
