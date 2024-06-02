@@ -1,8 +1,13 @@
 package com.system.neusoftpractice.controller;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import com.system.neusoftpractice.common.HttpResponseEntity;
+import com.system.neusoftpractice.dto.RequestCharacterEntity;
+import com.system.neusoftpractice.dto.User;
 import com.system.neusoftpractice.entity.*;
 import com.system.neusoftpractice.service.*;
+import com.system.neusoftpractice.util.*;
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,42 +27,43 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SupervisorController {
     private final SupervisorService supervisorService;
-
-    @PostMapping("/login")
-    public HttpResponseEntity login(@RequestBody Supervisor supervisor, HttpServletResponse response) {
-        List<Supervisor> supervisorList = supervisorService.query()
-                .eq("username", supervisor.getUsername())
-                .eq("password", supervisor.getPassword())
-                .eq("status", '1')
-                .list();
-        if(supervisorList.isEmpty())
-            return HttpResponseEntity.response(false, "用户名或密码错误", null);
-        else{
-            Supervisor loginSupervisor = supervisorList.get(0);
-            Cookie cookie = new Cookie("supervisorId", loginSupervisor.getId());
-            cookie.setSecure(true);
-            cookie.setHttpOnly(true);
-            response.addCookie(cookie);
-            return HttpResponseEntity.response(true, "登录", supervisorList);
-        }
-    }
-
+    private final UserService userService;
     @PostMapping("/addSupervisor")
-    public HttpResponseEntity addSupervisor(@RequestBody Supervisor supervisor) {
-        boolean success = supervisorService.save(supervisor);
-        return HttpResponseEntity.response(success, "创建", null);
+    public HttpResponseEntity addSupervisor(@RequestBody RequestCharacterEntity requestCharacterEntity) {
+        Supervisor supervisor = requestCharacterEntity.getSupervisor_create();
+        User user = requestCharacterEntity.getUser_create();
+
+        supervisor.setId(SnowflakeUtil.genId());
+        user.setId(SnowflakeUtil.genId());
+        user.setStatus(1);
+        user.setRole("Supervisor");
+
+        boolean supervisorSuccess = supervisorService.save(supervisor);
+        boolean userSuccess = userService.save(user);
+
+        return HttpResponseEntity.response(supervisorSuccess&&userSuccess, "创建", null);
     }
 
     @PostMapping("/modifySupervisor")
-    public HttpResponseEntity modifySupervisor(@RequestBody Supervisor supervisor) {
-        boolean success = supervisorService.updateById(supervisor);
-        return HttpResponseEntity.response(success, "修改", null);
+    public HttpResponseEntity modifySupervisor(@RequestBody RequestCharacterEntity requestCharacterEntity) {
+        Supervisor supervisor = requestCharacterEntity.getSupervisor_create();
+        User user = requestCharacterEntity.getUser_create();
+
+        boolean supervisorSuccess = supervisorService.updateById(supervisor);
+        boolean userSuccess = userService.updateById(user);
+
+        return HttpResponseEntity.response(supervisorSuccess&&userSuccess, "修改", null);
     }
 
     @PostMapping("/deleteSupervisor")
-    public HttpResponseEntity deleteSupervisorById(@RequestBody Supervisor supervisor) {
-        boolean success = supervisorService.removeById(supervisor);
-        return HttpResponseEntity.response(success, "删除", null);
+    public HttpResponseEntity deleteSupervisorById(@RequestBody RequestCharacterEntity requestCharacterEntity) {
+        Supervisor supervisor = requestCharacterEntity.getSupervisor_create();
+        User user = requestCharacterEntity.getUser_create();
+
+        boolean supervisorSuccess = supervisorService.removeById(supervisor);
+        boolean userSuccess = userService.removeById(user);
+
+        return HttpResponseEntity.response(supervisorSuccess&&userSuccess, "删除", null);
     }
 
     @PostMapping("/querySupervisorList")

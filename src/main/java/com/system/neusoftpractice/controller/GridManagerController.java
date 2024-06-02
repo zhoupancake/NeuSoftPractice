@@ -1,17 +1,23 @@
 package com.system.neusoftpractice.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.system.neusoftpractice.common.HttpResponseEntity;
+import com.system.neusoftpractice.dto.RequestCharacterEntity;
+import com.system.neusoftpractice.dto.User;
+import com.system.neusoftpractice.entity.Administrator;
 import com.system.neusoftpractice.entity.GridManager;
 import com.system.neusoftpractice.service.GridManagerService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
+import com.system.neusoftpractice.service.UserService;
+import com.system.neusoftpractice.util.SnowflakeUtil;
+
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -22,42 +28,43 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class GridManagerController {
     private final GridManagerService gridManagerService;
-
-    @PostMapping("/login")
-    public HttpResponseEntity login(@RequestBody GridManager gridManager, HttpServletResponse response) {
-        List<GridManager> gridManagerList = gridManagerService.query()
-                .eq("username", gridManager.getUsername())
-                .eq("password", gridManager.getPassword())
-                .eq("status", '1')
-                .list();
-        if(gridManagerList.isEmpty())
-            return HttpResponseEntity.response(false, "用户名或密码错误", null);
-        else{
-            GridManager loginGridManager = gridManagerList.get(0);
-            Cookie cookie = new Cookie("gridManagerId", loginGridManager.getId());
-            cookie.setSecure(true);
-            cookie.setHttpOnly(true);
-            response.addCookie(cookie);
-            return HttpResponseEntity.response(true, "登录", gridManagerList);
-        }
-    }
-
+    private final UserService userService;
     @PostMapping("/addGridManager")
-    public HttpResponseEntity addGridManager(@RequestBody GridManager gridManager) {
-        boolean success = gridManagerService.save(gridManager);
-        return HttpResponseEntity.response(success, "创建", null);
+    public HttpResponseEntity addGridManager(@RequestBody RequestCharacterEntity requestCharacterEntity) {
+        GridManager gridManager = requestCharacterEntity.getGridManager_create();
+        User user = requestCharacterEntity.getUser_create();
+
+        gridManager.setId(SnowflakeUtil.genId());
+        user.setId(gridManager.getId());
+        user.setStatus(1);
+        user.setRole("GridManager");
+
+        boolean gridManagerSuccess = gridManagerService.save(gridManager);
+        boolean userSuccess = userService.save(user);
+
+        return HttpResponseEntity.response(gridManagerSuccess&&userSuccess, "创建", null);
     }
 
     @PostMapping("/modifyGridManager")
-    public HttpResponseEntity modifyGridManager(@RequestBody GridManager gridManager) {
-        boolean success = gridManagerService.updateById(gridManager);
-        return HttpResponseEntity.response(success, "修改", null);
+    public HttpResponseEntity modifyGridManager(@RequestBody RequestCharacterEntity requestCharacterEntity) {
+        GridManager gridManager = requestCharacterEntity.getGridManager_create();
+        User user = requestCharacterEntity.getUser_create();
+
+        boolean gridManagerSuccess = gridManagerService.updateById(gridManager);
+        boolean userSuccess = userService.updateById(user);
+
+        return HttpResponseEntity.response(gridManagerSuccess&&userSuccess, "修改", null);
     }
 
     @PostMapping("/deleteGridManager")
-    public HttpResponseEntity deleteGridManagerById(@RequestBody GridManager gridManager) {
-        boolean success = gridManagerService.removeById(gridManager);
-        return HttpResponseEntity.response(success, "删除", null);
+    public HttpResponseEntity deleteGridManagerById(@RequestBody RequestCharacterEntity requestCharacterEntity) {
+        GridManager gridManager = requestCharacterEntity.getGridManager_create();
+        User user = requestCharacterEntity.getUser_create();
+
+        boolean gridManagerSuccess = gridManagerService.removeById(gridManager);
+        boolean userSuccess = userService.removeById(user);
+
+        return HttpResponseEntity.response(gridManagerSuccess&&userSuccess, "删除", null);
     }
 
     @PostMapping("/queryGridManagerList")

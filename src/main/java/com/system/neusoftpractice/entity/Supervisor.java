@@ -18,9 +18,6 @@ public class Supervisor implements Serializable {
     //Account Attributes
     @TableId
     private String id;
-    private String username;
-    private String password;
-    private Boolean used;
 
     //Personal Attributes
     private String idCard;

@@ -1,4 +1,4 @@
-package com.system.neusoftpractice.entity;
+package com.system.neusoftpractice.dto;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -7,20 +7,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@TableName("gridManager_info")
-public class GridManager implements Serializable {
-    //Account Attributes
+@TableName("user_info")
+public class User {
     @TableId
     private String id;
-    private String zone;
-
-    //Personal Attributes
-    private String idCard;
-    private String name;
+    private String username;
+    private String password;
+    private Integer status;
+    private String role;
 }
